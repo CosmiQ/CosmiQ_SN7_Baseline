@@ -1,10 +1,10 @@
 model_name: xdxd_spacenet4
 
-model_path:
-train: true
-infer: false
+model_path: '/workspace/codes/CosmiQ_SN7_Baseline/models/sn7_1/xdxd_final.pth'
+train: false
+infer: true
 
-pretrained: false
+pretrained: true
 nn_framework: torch
 batch_size: 6
 
@@ -23,9 +23,9 @@ data_specs:
   val_holdout_frac: 0.1
   data_workers:
 
-training_data_csv: '/workspace/data/csvs/sn7_baseline_train_df.csv'
+training_data_csv:
 validation_data_csv:
-inference_data_csv:
+inference_data_csv: '/workspace/data/csvs/sn7_baseline_test_public_df.csv'
 
 training_augmentation:
   augmentations:
@@ -79,7 +79,7 @@ training:
     early_stopping:
         patience: 24
     model_checkpoint:
-      filepath: '/workspace/codes/CosmiQ_SN7_Baseline/models/sn7_baseline/xdxd_best.pth'
+      filepath:
       monitor: val_loss
     lr_schedule:
       schedule_type: arbitrary
@@ -87,10 +87,10 @@ training:
         milestones:
           - 200
         gamma: 0.1
-  model_dest_path: '/workspace/codes/CosmiQ_SN7_Baseline/models/sn7_baseline/xdxd_final.pth'
+  model_dest_path:
   verbose: true
 
 inference:
   window_step_size_x:
   window_step_size_y:
-  output_dir:
+  output_dir: '/workspace/codes/CosmiQ_SN7_Baseline/inference_out/sn7_1_preds/raw'

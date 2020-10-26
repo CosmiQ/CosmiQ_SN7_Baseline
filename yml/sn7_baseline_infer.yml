@@ -1,6 +1,6 @@
 model_name: xdxd_spacenet4
 
-model_path: '/path_to_baseline/models/sn7_baseline/xdxd_final.pth'
+model_path: '/workspace/codes/CosmiQ_SN7_Baseline/models/sn7_baseline/xdxd_final.pth'
 train: false
 infer: true
 
@@ -25,7 +25,7 @@ data_specs:
 
 training_data_csv:
 validation_data_csv:
-inference_data_csv: '/local_data/sn7/aws_download/csvs/sn7_baseline_test_public_df.csv'
+inference_data_csv: '/workspace/data/csvs/sn7_baseline_test_public_df.csv'
 
 training_augmentation:
   augmentations:
@@ -93,4 +93,4 @@ training:
 inference:
   window_step_size_x:
   window_step_size_y:
-  output_dir: '/path_to_baseline/inference_out/sn7_baseline_preds/raw'
+  output_dir: '/workspace/codes/CosmiQ_SN7_Baseline/inference_out/sn7_baseline_preds/raw'
