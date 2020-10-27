@@ -5,8 +5,8 @@ from os.path import dirname, join
 src = dirname(__file__)
 code = dirname(src)
 yml = join(code, 'yml/')
-model = join(code, 'model/')
 tmp = join(code, 'tmp/')
+model = join(tmp, 'model/')
 
 training_data_csv = join(tmp, 'train.csv')
 config_path = join(yml, 'train.yml')

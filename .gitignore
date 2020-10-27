@@ -2,6 +2,5 @@
 .ipynb_checkpoints
 _extras
 __pycache__
-inference_out
-model
+backup
 tmp
