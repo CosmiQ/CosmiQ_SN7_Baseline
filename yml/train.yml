@@ -6,7 +6,7 @@ infer: false
 
 pretrained: false
 nn_framework: torch
-batch_size: 6
+batch_size: 12
 
 data_specs:
   width: 512
@@ -63,14 +63,14 @@ training:
   epochs: 300
   steps_per_epoch:
   optimizer: Adam
-  lr: 1e-4
+  lr: 4e-4
   opt_args:
   loss:
     bcewithlogits:
     jaccard:
   loss_weights:
     bcewithlogits: 10
-    jaccard: 2.5
+    jaccard: 10
   metrics:
     training:
     validation:
@@ -85,6 +85,11 @@ training:
       schedule_type: arbitrary
       schedule_dict:
         milestones:
+          - 1
+          - 10
+          - 50
+          - 100
+          - 150
           - 200
         gamma: 0.1
   model_dest_path: ''
