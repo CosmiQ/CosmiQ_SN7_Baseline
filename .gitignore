@@ -3,4 +3,5 @@
 _extras
 __pycache__
 inference_out
-models
+model
+tmp
