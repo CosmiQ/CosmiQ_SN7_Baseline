@@ -92,6 +92,10 @@ def track_footprint_identifiers(json_dir, out_dir,
                           min_iou=0.25, iou_field='iou_score', id_field='Id',
                           reverse_order=False,     
                           verbose=True, super_verbose=False):
+    # 对于一个地点（aoi），这个方法只会调用一次
+    # 基本上是一个越来越多的状态，并没有删去iou=0的多边形
+    # 但由于生成方式近似于迭代，每一个时间切片存出来的文件只考虑了它之前的情况，只有向前相交则取大，没有向后无交则不要
+    # 因此要实现向后无交则drop，需要重写一个drop_lonely_polygons方法。这个方法先全部迭代完成（for j, f in enumerate(json_files):），给每一个多边形id赋予一个intersection_count的字段，然后再调用track_footprint_identifiers的循环部分（for j, f in enumerate(json_files):），在（for pred_idx, pred_row in gdf_now.iterrows():）这个循环的两个（nomatch）的else中，判断intersection_count是否 >= 1，如果真则不运行else中的新赋id的相关代码，而是对gdf_master_Out进行drop操作
     '''
     Track footprint identifiers in the deep time stack.
     We need to track the global gdf instead of just the gdf of t-1.
@@ -125,6 +129,7 @@ def track_footprint_identifiers(json_dir, out_dir,
         
     gdf_dict = {}
     for j, f in enumerate(json_files):
+        # 在这里，每一个f就是一个地方不同时间的不同geojson结果
         
         name_root = f.split('.')[0]
         json_path = os.path.join(json_dir, f)
@@ -272,6 +277,7 @@ def track_footprint_identifiers(json_dir, out_dir,
         # save!
         if len(gdf_now) > 0:
             gdf_now.to_file(output_path, driver="GeoJSON")
+            # 每一次循环都会存一次，假设20个时间序列，则会同样存出20个经过iou比对的东西
         else:
             print("Empty dataframe, writing empty gdf", output_path)
             open(output_path, 'a').close()
