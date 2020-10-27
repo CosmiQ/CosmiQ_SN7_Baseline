@@ -1,47 +1,3 @@
-# # Train and Test the SpaceNet 7 Baseline Algorithm
-# 
-# 
-# We assume that initial steps of README have been executed, sn7_data_prep.ipynb has been executed, and that this notebook is running in a docker container.  See the `src` directory for functions used in the algorithm.  
-
-# --------
-# ## 1. Train
-# 1. Launch a separate docker container for training:
-# 
-#        nvidia-docker build -t sn7_baseline_image /path_to_baseline/docker 
-#        NV_GPU=0 nvidia-docker run -it -v /local_data:/local_data  -ti --ipc=host --name sn7_gpu0 sn7_baseline_image
-#        conda activate solaris
-#     
-# 2. Initiate training.  First edit `sn7_baseline_train.yml` to point to the correct data paths, then execute the following in the command line: 
-#     
-#        cd /path_to_baseline/src
-#        time python sn7_baseline_train.py
-# 
-#     Training for the full 300 epochs should take 20 hours (~$60) on a p3.2xlarge AWS instance.
-#     
-#  
-#  
-# 3. Alternately, instead of training, one could use the pre-trained weights included in this repository.
-
-# --------
-# ## 2. Infer
-# Once training is completed (or pre-trained weights are selected) it's time to initiate inference. First edit `sn7_baseline_infer.yml` to point to the correct data paths, run:
-# 
-#         cd /path_to_baseline/src
-#         time python sn7_baseline_infer.py
-# 
-# 
-# This script will execute in ~2.5 minutes on a p3.2xlarge AWS instance (which equates to  approximately 60 square kilometers per second).
-
-# --------
-# ## 3. Extract Footprints and Building Identifiers
-# 
-# The `sn7_baseline_infer.py` script executes the segmentation model, which is only the first step in the extracting matched building footprints in the data cube.  In the cells below, we refine these predictioms masks to the final output.
-
-# %%
-# Set prediction and image directories (edit appropriately)
-pred_top_dir = '/workspace/code/tmp'
-im_top_dir = '/workspace/data/test_public'
-
 from shapely.ops import cascaded_union
 import matplotlib.pyplot as plt
 import geopandas as gpd
@@ -56,6 +12,7 @@ import gdal
 import time
 import sys
 import os
+from os.path import dirname, join
 
 import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 16})
@@ -70,6 +27,10 @@ from solaris.raster.image import create_multiband_geotiff
 
 from postproc_funcs import map_wrapper, multithread_polys, calculate_iou, track_footprint_identifiers, sn7_convert_geojsons_to_csv
 
+src = dirname(__file__)
+code = dirname(src)
+tmp = join(code, 'tmp/')
+pred_top_dir = tmp
 
 # --------
 # ### 3.A. Group predictions by AOI
@@ -372,9 +333,7 @@ _ = pool.map(map_wrapper, params)
 # %%
 # Make proposal csv
 
-out_dir_csv = os.path.join(pred_top_dir, 'csvs')
-os.makedirs(out_dir_csv, exist_ok=True)
-prop_file = os.path.join(out_dir_csv, 'sn7_baseline_predictions.csv')
+prop_file = os.path.join(pred_top_dir, 'solution.csv')
 
 aoi_dirs = sorted([os.path.join(pred_top_dir, 'grouped', aoi, 'pred_jsons_match')                    for aoi in os.listdir(os.path.join(pred_top_dir, 'grouped'))                    if os.path.isdir(os.path.join(pred_top_dir, 'grouped', aoi, 'pred_jsons_match'))])
 print("aoi_dirs:", aoi_dirs)
